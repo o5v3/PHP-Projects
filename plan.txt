@@ -1,0 +1,2 @@
+1- Agregar los datos a un archivo de texto despues de visualizarlos en graph.php.
+2- Dar la opcion de regresar al formulario con un boton.
