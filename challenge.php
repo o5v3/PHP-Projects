@@ -45,6 +45,9 @@
         //Si no se hace esto, al enviar el formulario se subiria inmediatamente al archivo.
         $_SESSION["insert"] = null;
         ?>
+        <form method="POST">
+            <input type="submit" name="insert" value="Show students">
+        </form>
         <form method="POST" action="results.php">
         <!--Esto esta en una lista para que sea mas organizado y se vea mejor-->
         <ul>
@@ -84,9 +87,6 @@
                 <input type="number" name="timeSpentWithFriends" value=<?php echo resumeState('timeSpentWithFriends'); ?>>
         </ul>
             <input type="submit">
-        </form>
-        <form method="POST">
-            <input type="submit" name="insert" value="Show students">
         </form>
      
         <style>body {text-align: center;}</style>
