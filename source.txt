@@ -1,0 +1,31 @@
+{Prototype form
+
++Please tell us your name:
+-firstName/text
++Great, now, tell us your last name:
+-lastName/text
++Ok. Now, in what school year are you? (In grade. Ex: 1st year = 7)
+-yearAtSchool/number 
++Oh? And how old are you?
+-age/number
++Wait, if you have that age, then how many siblings do you have?
+-numberOfSiblings/number
++Never would've guessed it. At what time do you go to bed? And when do you wake up?
+<!--Dividir esta pregunta en dos hace que se vea mejor-->
+Hour of sleep:
+-timeOfSleep/time 
+Hour of waking up: 
+-timeOfWakeUp/time
++I want you to be honest with me: How many hours do you spend on your homework?
+-hoursDoingHomework/number
++Oh really? And how much time you spend watching TV or movies?
+-hoursWatchingTV/number
++Hmmm... How much time do you spend using a computer or gaming console?
+-hoursUsingComputer/number
++I'll have to trust you. How many hours do you spend with your family per day?
+-timeSpentWithFamily/number
++And finally, how many hours do you spend with your friends per day?
+-timeSpentWithFriends/number
+
+
+

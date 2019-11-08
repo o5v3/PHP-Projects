@@ -5,6 +5,7 @@
     <body> 
         <?php 
         session_start();
+        $file = "challenge1.php";
         echo "<br><br><br>";
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             //Permite mantener el array SESSION actualizado con el state y los valores
@@ -23,12 +24,16 @@
             return $table;
         };
 
-        function main() {
-            echo "Great! Thanks " . $_SESSION["firstName"] . " for responding to our survey<br><br>";
+        function main($file) {
+            if (isset($_SESSION["firstName"])){
+                echo "Great! Thanks " . $_SESSION["firstName"] . " for responding to our survey<br><br>";
+            } else {
+                echo "Great! Thanks for responding to our survey<br><br>";
+            }
             echo "These are your details:<br><br>";
 
             echo createTable($_SESSION);
-            
+            if ($file == "challenge.php") {
             $yearsLeft = 12 - (int) $_SESSION["yearAtSchool"];
             $hoursWatchingTVPerYear = (int) $_SESSION["hoursWatchingTV"] * 365;
             $hoursDoingHomeworkPerYear = (int) $_SESSION["hoursDoingHomework"] * 365;
@@ -47,9 +52,10 @@
             echo "<li>" . (($hoursWatchingTVPerYear + $hoursUsingComputerPerYear) * $yearsLeft) . " hours watching a screen until you finish school.</li><br><br>";
             echo "<li>" . $percentageAwakeOnScreen . " percent of your awake time in front of a screen until you finish school.</li><br><br>";
             echo "</ul>";
+            };
             //Creo que seria mas eficiente escribirlo directamente en HTML y crear otro script abajo.
 			echo "Do you want to add the student to the record?<br><br>";
-			echo "<form method='POST' action='challenge.php'>";
+			echo "<form method='POST' action='$file'>";
 			    echo "<input type='submit' value='Return'></input>";
 			echo "</form>";
 			echo "<form method='POST'>";
@@ -59,6 +65,7 @@
             //    echo "<input type='email' name='target'></input>";
             //    echo "<input type='submit' name='insert' value='Send email'></input>";
             echo "</form>";
+            
         }
         
         //Si se ingresa a la pagina a traves del boton "Add record", añadir al estudiante a la base de datos.
@@ -101,7 +108,7 @@
         }*/
         
         else {
-            main();
+            main($file);
         };
         }
         ?>

@@ -1,0 +1,8 @@
+{Forma de prueba
+
++Pon un numero
+-numero/number
++Edad
+-age/number
++Hora 
+-hour/time
