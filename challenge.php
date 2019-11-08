@@ -6,13 +6,19 @@
         <h1>Prototype Form</h1>
         <p>How do you spend your day?</p>
         <br>
-        <?php session_start(); 
+        <?php 
+        //Permite mantener los valores en los campos en caso de que se presione "Return".
+        session_start(); 
+
+        //Obtiene el valor previo del campo del "SESSION" array. Si no existe, retorna null.
         function resumeState($valueName = null)
         {
             if (!(isset($_SESSION[$valueName]))) {return;}
             $value = $_SESSION[$valueName];
             return $value;
         };
+
+        //Si no se hace esto, al enviar el formulario se subiria inmediatamente al archivo.
         $_SESSION["insert"] = null;
         ?>
         <form method="POST" action="results.php">
@@ -20,22 +26,36 @@
         <ul>
             <li>Please tell us your name:</li>
                 <input type="text" name="firstName" value=<?php echo resumeState('firstName'); ?>>
+            <br>
             <li>Great, now, tell us your last name:</li>
                 <input type="text" name="lastName" value=<?php echo resumeState('lastName'); ?>>
-            <li>Ok. Now, how many years have you spent in this school?</li>
-                <input type="number" name="yearsAtSchool" value=<?php echo resumeState('yearsAtSchool'); ?>>
+            <br>
+            <li>Ok. Now, in what school year are you? (In grade. Ex: 1st year = 7)</li>
+                <input type="number" name="yearAtSchool" value=<?php echo resumeState('yearAtSchool'); ?>>
+            <br>
             <li>Oh? And how old are you?</li>
                 <input type="number" name="age" value=<?php echo resumeState('age'); ?>>
+            <br>
             <li>Wait, if you have that age, then how many siblings do you have?</li>
                 <input type="number" name="numberOfSiblings" value=<?php echo resumeState('numberOfSiblings'); ?>>
+            <br>
             <li>Never would've guessed it. At what time do you go to bed? And when do you wake up?</li>
                 <!--Dividir esta pregunta en dos hace que se vea mejor-->
                 <p>Hour of sleep:</p> <input type="time" name="timeOfSleep" value=<?php echo resumeState('timeOfSleep'); ?>>
                 <p>Hour of waking up:</p> <input type="time" name="timeOfWakeUp" value=<?php echo resumeState('timeOfWakeUp'); ?>>
+            <br>
             <li>I want you to be honest with me: How many hours do you spend on your homework?</li>
                 <input type="number" name="hoursDoingHomework" value=<?php echo resumeState('hoursDoingHomework'); ?>>
+            <br>
+            <li>Oh really? And how much time you spend watching TV or movies?</li>
+                <input type="number" name="hoursWatchingTV" value=<?php echo resumeState('hoursWatchingTV'); ?>>
+            <br>
+            <li>Hmmm... How much time do you spend using a computer or gaming console?</li>
+                <input type="number" name="hoursUsingComputer" value=<?php echo resumeState('hoursUsingComputer'); ?>>
+            <br>
             <li>I'll have to trust you. How many hours do you spend with your family per day?</li>
                 <input type="number" name="timeSpentWithFamily" value=<?php echo resumeState('timeSpentWithFamily'); ?>>
+            <br>
             <li>And finally, how many hours do you spend with your friends per day?</li>
                 <input type="number" name="timeSpentWithFriends" value=<?php echo resumeState('timeSpentWithFriends'); ?>>
         </ul>

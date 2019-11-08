@@ -1,2 +1,6 @@
 1- Agregar los datos a un archivo de texto despues de visualizarlos en graph.php.
 2- Dar la opcion de regresar al formulario con un boton.
+3- Mostrar el archivo students en la pagina
+4- Crear distintos bloques en el archivo students, cada uno identificado con fecha y hora del sistema (Append!)
+5- Hacer el formulario tipo template. Las preguntas y opciones estan en un archivo de texto que es abierto y procesado en PHP.
+6- Separar los datos del archivo student con algun caracter especial.
