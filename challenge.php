@@ -18,6 +18,30 @@
             return $value;
         };
 
+        function createTable($data) {
+            $table = "<table style='text-align: center; margin: auto; width: auto;'>";
+            foreach ($data as $property => $value) {
+                if ($property == "insert" || $property == "target" || $property == "state") {continue;};
+                $table.= "<tr><td>$property</td><td>$value</td></tr>";
+            };
+            $table .= "</table><br>";
+            return $table;
+        };
+        
+        if (isset($_POST["insert"]) && $_POST["insert"] == "Show students") {
+            $database = fopen("students.txt", "r");
+            $data = array();
+            while (!feof($database)) {
+                $line = fgets($database);
+                $words = explode("+", $line);
+                if ($words[0] == "") {continue;};
+                $data[$words[0]] = $words[1];
+            };
+            echo createTable($data);
+            fclose($database);
+            echo '<form method="POST"><input type="submit" name="insert" value="Close"></form>';
+        };
+
         //Si no se hace esto, al enviar el formulario se subiria inmediatamente al archivo.
         $_SESSION["insert"] = null;
         ?>
@@ -61,7 +85,10 @@
         </ul>
             <input type="submit">
         </form>
-
+        <form method="POST">
+            <input type="submit" name="insert" value="Show students">
+        </form>
+     
         <style>body {text-align: center;}</style>
     </body>
 </html>
