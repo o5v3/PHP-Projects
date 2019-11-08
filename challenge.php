@@ -34,6 +34,9 @@
             while (!feof($database)) {
                 $line = fgets($database);
                 $words = explode("+", $line);
+                if (isset($words[2])) {
+                    echo createTable($data);
+                }
                 if ($words[0] == "") {continue;};
                 $data[$words[0]] = $words[1];
             };

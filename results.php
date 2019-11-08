@@ -65,7 +65,8 @@
         //Si no, mostrar los datos ingresados.
         
         if (isset($_SESSION["insert"]) && $_SESSION["insert"] == "Add record") {
-			$database = fopen("students.txt", "w");
+            $database = fopen("students.txt", "a");
+            fwrite($database, date("d/m/Y+H:i:s") . "+1\r\n");
 			foreach ($_SESSION as $property => $value) {
                 if ($property == "insert" || $property == "target" || $property == "state") {continue;};
                 fwrite($database, "$property+$value\r\n");            
@@ -80,6 +81,9 @@
             while (!feof($database)) {
                 $line = fgets($database);
                 $words = explode("+", $line);
+                if (isset($words[2])) {
+                    echo createTable($data);
+                }
                 if ($words[0] == "") {continue;};
                 $data[$words[0]] = $words[1];
             };
