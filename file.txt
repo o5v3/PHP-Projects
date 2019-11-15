@@ -6,5 +6,7 @@
 -age/number
 +Hora 
 -hour/time
-+Texto
--text/text
++Otro campo
+-other/text
++Texto al azar
+-texto/text

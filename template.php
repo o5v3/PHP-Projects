@@ -5,6 +5,9 @@
     <body>
     <?php 
     function parser($sourceFile) {
+        //Instrucciones: "+" (Pregunta), "-" (Nombre de variable. Debe ir con una instruccion /)
+        // "/" (Tipo de input. Debe seguir inmediatamente despues de la instruccion "-")
+        // "{" (Titulo)
         $instructionSet = array("+", "-", "/", "{");
         $html = "<form method='POST' action='results.php'>";
         $html .= "<ul>";

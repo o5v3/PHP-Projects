@@ -1,0 +1,31 @@
+15/11/2019+18:10:34+1
+numero+34
+age+4
+hour+05:04
+text+34
+15/11/2019+18:10:51+1
+numero+45345
+age+123
+hour+23:06
+text+hola
+15/11/2019+18:11:17+1
+numero+5
+age+17
+hour+14:11
+text+Hola a Todos!
+15/11/2019+18:24:41+1
+numero+5
+age+234
+hour+03:04
+text+Alo
+15/11/2019+18:28:59+1
+numero+3
+age+87
+hour+03:45
+other+Otra cosa
+15/11/2019+18:42:51+1
+numero+34
+age+234
+hour+23:34
+other+fef
+texto+wfe

@@ -3,6 +3,7 @@
         <title>PHP Challenge</title>
     </head>
     <body>
+        <!--Se agrupa todo en un div para colocarle un borde.-->
         <div id="main">
         <h1>Prototype Form</h1>
         <p>How do you spend your day?</p>
@@ -68,7 +69,7 @@
         };
 
         //Obtiene un archivo de input y lo analiza, cambiando las instrucciones por sus equivalentes
-        //y los demas se deja igual. Retorna un string de HTML valido.
+        //y lo demas se deja igual. Retorna un string de HTML valido.
         function parser($sourceFile) {
             //Instrucciones: "+" (Pregunta), "-" (Nombre de variable. Debe ir con una instruccion /)
             // "/" (Tipo de input. Debe seguir inmediatamente despues de la instruccion "-")
@@ -140,7 +141,13 @@
         };
 
         //Registra los campos en el archivo con el formato:
-            
+        //         Dia/Mes/Año+Hora:Minutos:Segundos+1
+        //                 Propiedad+Valor
+        //                 Propiedad+Valor
+        //                 Propiedad+Valor
+        //                       ...
+        //(El 1 puede ser intercambiado por cualquier cosa y funcionara igual)
+        //(Cualquier cosa excepto un +)
         function addRecord() {
             $database = fopen("students.txt", "a");
             fwrite($database, date("d/m/Y+H:i:s") . "+1\r\n");
@@ -152,6 +159,7 @@
             fclose($database);
             echo "Record successfully added to database!";
             $_SESSION["insert"] = null;
+            session_unset();
         };
 
         function main() {
@@ -185,7 +193,7 @@
         main();
         ?>
         </div>
-
+        
         <style>body {text-align: center;} table, td {border: 1px dotted black;} #main {border: 1px dotted black; width: 25%; margin: auto;}</style>
     </body>
 </html>
