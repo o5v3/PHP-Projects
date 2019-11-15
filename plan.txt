@@ -2,5 +2,14 @@
 2- Dar la opcion de regresar al formulario con un boton. {Listo}
 3- Mostrar el archivo students en la pagina {Listo}
 4- Crear distintos bloques en el archivo students, cada uno identificado con fecha y hora del sistema (Append!) {Listo}
-5- Hacer el formulario tipo template. Las preguntas y opciones estan en un archivo de texto que es abierto y procesado en PHP. {Listo}
-6- Separar los datos del archivo student con algun caracter especial. {Listo}
+5- Hacer el formulario tipo template. Las preguntas y opciones estan en un archivo de texto que es abierto y procesado en PHP.{Listo}
+6- Separar los datos del archivo student con algun caracter especial. {Listo}ç
+
+-Etapa 3: Actualizacion-
+7- Actualizar los datos en otra vista, con la forma de input.(No eliminar la vista actual)
+8- Mostrar cada uno de los estudiantes, con detalle, en la otra vista.
+9- Dar la opcion de siguiente y anterior en la pantalla del estudiante (Si se puede realizar esa accion, si no se puede hacer, no
+mostrar el boton)
+10- Dar la opcion de eliminar al estudiante
+11- Si se elimina al estudante, avanzar al siguiente (O retroceder si es el ultimo de la fila)
+12- Si se elimina al unico estudiante que queda, mostrar la vista vacia.

@@ -3,18 +3,22 @@
         <title>PHP Challenge</title>
     </head>
     <body>
+        <div id="main">
         <h1>Prototype Form</h1>
         <p>How do you spend your day?</p>
         <br>
 
         <?php 
+        //Nos permite mantener los valores del form.
         session_start();
+
 
         function showForm() {
             echo "<form method='POST'>";
             echo "<input type='submit' name='state' value='Show students'>";
             echo "<input type='hidden' name='insert' value='Return'>";
             echo "</form>";
+            //Si quieres cambiar el archivo del codigo fuente, cambia el nombre aqui.
             $source = fopen("file.txt", "r");
             echo call_user_func("parser", $source);
             fclose($source);
@@ -42,17 +46,17 @@
             echo "<form method='POST'>";
                 echo "<input type='submit' name='state' value='Show students'>";
                 echo "<input type='hidden' name='insert' value='Send form'>";
-            //    echo "<input type='email' name='target'></input>";
-            //    echo "<input type='submit' name='insert' value='Send email'></input>";
             echo "</form>";
         };
 
+        //Se usa en showForm para mantener los valores de los campos al regresar de showResults.
         function resumeState($valueName = null) {
                 if (!(isset($_SESSION[$valueName]))) {return;}
                 $value = $_SESSION[$valueName];
                 return $value;
         };
 
+        //Crea una tabla a partir de un array asociativo.
         function createTable($data) {
             $table = "<table style='text-align: center; margin: auto; width: auto;'>";
             foreach ($data as $property => $value) {
@@ -90,6 +94,7 @@
             return $html;
         };
 
+        //Usada por el parser para decidir que instruccion ejecutar.
         function execute($operator, $data) {
             if ($operator == "+") {
                 return "<li>$data</li>";
@@ -104,12 +109,20 @@
             }
         };
 
+        //Muestra tablas creadas a partir de la database.
         function showStudents() {
             $database = fopen("students.txt", "r");
             $data = array();
             while (!feof($database)) {
+                //Cada linea equivale a un par Propiedad-Valor.
                 $line = fgets($database);
+                //Las propiedades y los valores estan separados por el signo "+".
                 $words = explode("+", $line);
+                //Si hay 2 o mas "+" en la linea, crear una tabla con los datos presentes y reiniciar la data.
+                //Esto se usa para separar las tablas en fechas, ya que la fecha esta formateada:
+                //Ejemplo: (Fecha)+(Hora)+(Separador).
+                //
+                //El separador puede ser cualquier char, lo que importa es que este presente.
                 if (isset($words[2])) {
                     echo createTable($data);
                     $data = array();
@@ -122,9 +135,12 @@
             fclose($database);
             echo '<form method="POST">';
             echo '<input type="submit" name="state" value="Close">';
+            //Permite devolvernos al estado de donde activamos showStudents.
             echo '<input type="hidden" name="insert" value="' . $_POST["insert"] . '"></form>';
         };
 
+        //Registra los campos en el archivo con el formato:
+            
         function addRecord() {
             $database = fopen("students.txt", "a");
             fwrite($database, date("d/m/Y+H:i:s") . "+1\r\n");
@@ -168,7 +184,8 @@
 
         main();
         ?>
+        </div>
 
-        <style>body {text-align: center;}</style>
+        <style>body {text-align: center;} table, td {border: 1px dotted black;} #main {border: 1px dotted black; width: 25%; margin: auto;}</style>
     </body>
 </html>
