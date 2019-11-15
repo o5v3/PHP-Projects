@@ -34,24 +34,24 @@
 
             echo createTable($_SESSION);
             if ($file == "challenge.php") {
-            $yearsLeft = 12 - (int) $_SESSION["yearAtSchool"];
-            $hoursWatchingTVPerYear = (int) $_SESSION["hoursWatchingTV"] * 365;
-            $hoursDoingHomeworkPerYear = (int) $_SESSION["hoursDoingHomework"] * 365;
-            $hoursUsingComputerPerYear = (int) $_SESSION["hoursUsingComputer"] * 365;
+                $yearsLeft = 12 - (int) $_SESSION["yearAtSchool"];
+                $hoursWatchingTVPerYear = (int) $_SESSION["hoursWatchingTV"] * 365;
+                $hoursDoingHomeworkPerYear = (int) $_SESSION["hoursDoingHomework"] * 365;
+                $hoursUsingComputerPerYear = (int) $_SESSION["hoursUsingComputer"] * 365;
 
-            $percentageAwakeOnScreen = ((((int) $_SESSION["hoursWatchingTV"] + (int) $_SESSION["hoursUsingComputer"]) * 3600) * 100) / (strtotime($_SESSION["timeOfSleep"]) - strtotime($_SESSION["timeOfWakeUp"]));
-            
-            echo "Based on the information you entered, you will spend:<br><br>";
-            echo "<ul>";
-            echo "<li>" . $hoursWatchingTVPerYear . " hours watching TV or movies per year.</li><br><br>";
-            echo "<li>" . $hoursDoingHomeworkPerYear . " hours doing homework per year.</li><br><br>";
-            echo "<li>" . ($hoursWatchingTVPerYear + $hoursUsingComputerPerYear) . " hours in front of a TV or computer screen per year.</li><br><br>";
-            echo "<li>" . (((int) $_SESSION["timeSpentWithFamily"] + (int) $_SESSION["timeSpentWithFriends"]) * 365) . " hours with friends and family per year.</li><br><br>";
-            echo "<li>You have $yearsLeft years left at school, of which you'll spend:</li>";
-            echo "<li>" . ($hoursDoingHomeworkPerYear * $yearsLeft) . " hours doing homework until you finish school.</li><br><br>";
-            echo "<li>" . (($hoursWatchingTVPerYear + $hoursUsingComputerPerYear) * $yearsLeft) . " hours watching a screen until you finish school.</li><br><br>";
-            echo "<li>" . $percentageAwakeOnScreen . " percent of your awake time in front of a screen until you finish school.</li><br><br>";
-            echo "</ul>";
+                $percentageAwakeOnScreen = ((((int) $_SESSION["hoursWatchingTV"] + (int) $_SESSION["hoursUsingComputer"]) * 3600) * 100) / (strtotime($_SESSION["timeOfSleep"]) - strtotime($_SESSION["timeOfWakeUp"]));
+                
+                echo "Based on the information you entered, you will spend:<br><br>";
+                echo "<ul>";
+                echo "<li>" . $hoursWatchingTVPerYear . " hours watching TV or movies per year.</li><br><br>";
+                echo "<li>" . $hoursDoingHomeworkPerYear . " hours doing homework per year.</li><br><br>";
+                echo "<li>" . ($hoursWatchingTVPerYear + $hoursUsingComputerPerYear) . " hours in front of a TV or computer screen per year.</li><br><br>";
+                echo "<li>" . (((int) $_SESSION["timeSpentWithFamily"] + (int) $_SESSION["timeSpentWithFriends"]) * 365) . " hours with friends and family per year.</li><br><br>";
+                echo "<li>You have $yearsLeft years left at school, of which you'll spend:</li>";
+                echo "<li>" . ($hoursDoingHomeworkPerYear * $yearsLeft) . " hours doing homework until you finish school.</li><br><br>";
+                echo "<li>" . (($hoursWatchingTVPerYear + $hoursUsingComputerPerYear) * $yearsLeft) . " hours watching a screen until you finish school.</li><br><br>";
+                echo "<li>" . $percentageAwakeOnScreen . " percent of your awake time in front of a screen until you finish school.</li><br><br>";
+                echo "</ul>";
             };
             //Creo que seria mas eficiente escribirlo directamente en HTML y crear otro script abajo.
 			echo "Do you want to add the student to the record?<br><br>";

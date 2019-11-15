@@ -6,3 +6,5 @@
 -age/number
 +Hora 
 -hour/time
++Texto
+-text/text

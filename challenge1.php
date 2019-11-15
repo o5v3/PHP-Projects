@@ -18,6 +18,7 @@
             return $value;
         };
 
+        //Retorna una tabla desde un array asociativo.
         function createTable($data) {
             $table = "<table style='text-align: center; margin: auto; width: auto;'>";
             foreach ($data as $property => $value) {
@@ -28,6 +29,7 @@
             return $table;
         };
         
+        //Muestra el contenido del database si se selecciono "Show students".
         if (isset($_POST["insert"]) && $_POST["insert"] == "Show students") {
             $database = fopen("students.txt", "r");
             $data = array();
@@ -48,17 +50,28 @@
         //Si no se hace esto, al enviar el formulario se subiria inmediatamente al archivo.
         $_SESSION["insert"] = null;
         ?>
+        <!--Boton que recarga la pagina y nos muestra el contenido del database.
+        Si los campos fueron llenados, seran reseteados al recargar la pagina.-->
         <form method="POST">
             <input type="submit" name="insert" value="Show students">
         </form>
+
         <?php 
+    //Obtiene un archivo de input y lo analiza, cambiando las instrucciones por sus equivalentes
+    //y los demas se deja igual. Retorna un string de HTML valido.
     function parser($sourceFile) {
+        //Instrucciones: "+" (Pregunta), "-" (Nombre de variable. Debe ir con una instruccion /)
+        // "/" (Tipo de input. Debe seguir inmediatamente despues de la instruccion "-")
+        // "{" (Titulo)
         $instructionSet = array("+", "-", "/", "{");
         $html = "<form method='POST' action='results.php'>";
         $html .= "<ul>";
             while (!(feof($sourceFile))) {
                 $line = fgets($sourceFile);
                 $line = str_split($line);
+                //Si el char de inicio es una instruccion, ejecutarla.
+                //Si no, añadir la linea tal y como esta. Esto permite añadir
+                //HTML en el archivo fuente y este se  mostrara en la pagina.
                 if (in_array($line[0], $instructionSet)){
                     $html .= execute($line[0], substr(implode("", $line), 1)) . "<br>";
                 } else {
@@ -77,15 +90,18 @@
         };
         if ($operator == "-") {
             $pieces = explode("/", $data);
-            return "<input type='" . rtrim($pieces[1]) . "' name='$pieces[0]' value='<?php echo resumeState('$pieces[0]');?>'>";
+            //El rtrim es necesario ya que el tipo siempre termina con algo de whitespace.
+            return "<input type='" . rtrim($pieces[1]) . "' name='$pieces[0]' value='" . resumeState($pieces[0]) . "'>";
         };
         if ($operator == "{") {
             return "<h2>$data</h2>";
         }
     }
     $source = fopen("file.txt", "r");
-    eval("?> " . parser($source));
+    //Buscar manera de utilizar otra cosa que no sea eval.
+    echo call_user_func("parser", $source);
     fclose($source);
+    //Permite cambiar el archivo fuente sin que queden residuos del archivo anterior.
     session_unset();
     ?>
      
