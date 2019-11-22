@@ -13,7 +13,7 @@
         //Nos permite mantener los valores del form.
         session_start();
 
-
+        //Muestra la forma principal
         function showForm() {
             echo "<form method='POST'>";
             echo "<input type='submit' name='state' value='Show students'>";
@@ -30,6 +30,7 @@
             session_unset();
         };
 
+        //Se muestra una vez que se hace submit en la forma principal
         function showResults() {
             if (isset($_SESSION["firstName"])){
                 echo "Great! Thanks " . $_SESSION["firstName"] . " for responding to our survey<br><br>";
@@ -53,6 +54,7 @@
             echo "</form>";
         };
 
+        //Muestra un estudiante a la vez. Permite actualizarlos, eliminarlos y pasar entre ellos
         function viewStudent($data, $studentNum) {
             if (!isset($data[$studentNum])) {
                 if (isset($data[$studentNum - 1])) {
@@ -89,6 +91,7 @@
             echo "</form>";
         };    
         
+        //Crea una forma con los datos del estudiante elegido para proceder a modificarlo
         function updateStudent($data, $studentNum) {
             $form = "<form method='POST'>";
             $exclusive = false;
@@ -98,16 +101,25 @@
                     $form .= "<li>$value</li>";  
                     $exclusive = true;
                     continue;                  
-                }
+                };
                 $form .= "<ul>";
                 $form .= "<li>$property</li>";
-                $form .= "<input name='$property' value='$value'></input>";
+                $type = "text";
+                if (strpos($value, ":")) {
+                    $type = "time";
+                } elseif (intval($value) !== 0) {
+                    $type = "number";
+                };
+                $form .= "<input type='$type' name='$property' value='" . rtrim($value) . "'></input>";
                 $form .= "</ul>";
             };
             $form .= "<input type='submit' name='insert' value='Add record'></input>";
             $form .= "<input type='hidden' name='target' value='Update'></input>";   
             $form .=  "<input type='hidden' name='currentStudent' value='$studentNum'></input>";                      
             $form .= "</form>";
+            $form .= "<form method='POST'>";
+            $form .= "<input type='submit' name='insert' value='Return'></input>";
+            $form .=  "</form>";
             echo $form;
         };
 
@@ -226,6 +238,11 @@
             echo "</form>";
         };
 
+        //Actua de manera similar a addRecord con dos diferencias:
+        //1) Usa el modo "w", por lo que sobreescribe los contenidos del archivo.
+        //2) No obtiene la data del array $_SESSION, la obtiene de un array $data que se le da como argumento.
+        //Si quieres mantener los datos del archivo completo, pasa todo su contenido a un array, realiza los
+        //cambios que requieras y pasa el array como el primer argumento.
         function updateRecord($data, $currentStudent = null) {
             $database = fopen("students.txt", "w");
             foreach ($data as $student) {
@@ -274,6 +291,8 @@
             return $data;
         };
 
+        //Lee el archivo, modifica los datos de un estudiante especificado y sobreescribe el archivo
+        //con los datos cambiados.
         function chooseWrite($studentNum) {
             $data = getStudentsData("students.txt");
             foreach ($_SESSION as $property => $value) {
@@ -283,6 +302,7 @@
             updateRecord($data);
         };
 
+        //Lee el archivo completo, borra al estudiante y sobreescribe el archivo original.
         function deleteStudent($studentNum) {
             $data = getStudentsData("students.txt");
             array_splice($data, $studentNum - 1, 1);
@@ -293,6 +313,8 @@
             if (!isset($_POST["currentStudent"])) {
                 $_POST["currentStudent"] = 1;
             };
+            //Se utiliza en la vista "Update" para ciclar entre los estudiantes e identificar a cual eliminar o
+            //actualizar.
             $currentStudent = $_POST["currentStudent"];
             if (isset($_POST["state"])) {
                 if ($_POST["state"] == "Show students") {
