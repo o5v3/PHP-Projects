@@ -1,117 +1,174 @@
-<html>
-    <head>
-        <title>PHP Challenge 1</title>
-    </head>
-    <body> 
-        <?php 
-        session_start();
-        $file = "challenge1.php";
-        echo "<br><br><br>";
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            //Permite mantener el array SESSION actualizado con el state y los valores
-            foreach ($_POST as $property => $value) {
-                $_SESSION[$property] = $value;
-            };
+<?php 
+        
+function showForm() {
+    $html = "<input type='button' onclick='main.showFullData();' value='Show data'>";
+    $html .= "<input type='button' onclick='main.showIndividualData();' value='Update data'>";
+    $html .= "</form>";
+    //Si quieres cambiar el archivo del codigo fuente, cambia el nombre aqui.
+    $source = fopen("file.txt", "r");
+    $html .= parser($source);
+    fclose($source);
+    return $html;
+};
 
-        function createTable($data) {
-            $table = "<table style='text-align: center; margin: auto; width: auto;'>";
-            foreach ($data as $property => $value) {
-                if ($property == "insert" || $property == "target" || $property == "state") {continue;};
-                $table.= "<tr><td>$property</td><td>$value</td></tr>";
-            
-            };
-            $table .= "</table><br>";
-            return $table;
-        };
+//Crea una tabla a partir de un array asociativo.
+function createTable($data) {
+    $table = "<table style='text-align: center; margin: auto; width: auto;'>";
+    foreach ($data as $property => $value) {
+        $table.= "<tr><td>$property</td><td>$value</td></tr>";
+    };
+    $table .= "</table><br>";
+    return $table;
+};
 
-        function main($file) {
-            if (isset($_SESSION["firstName"])){
-                echo "Great! Thanks " . $_SESSION["firstName"] . " for responding to our survey<br><br>";
+//Obtiene un archivo de input y lo analiza, cambiando las instrucciones por sus equivalentes
+//y lo demas se deja igual. Retorna un string de HTML valido.
+function parser($sourceFile) {
+    //Instrucciones: "+" (Pregunta), "-" (Nombre de variable. Debe ir con una instruccion /)
+    // "/" (Tipo de input. Debe seguir inmediatamente despues de la instruccion "-")
+    // "{" (Titulo)
+    $instructionSet = array("+", "-", "/", "{");
+    $html = "<ul>";
+        while (!(feof($sourceFile))) {
+            $line = fgets($sourceFile);
+            $line = str_split($line);
+            //Si el char de inicio es una instruccion, ejecutarla.
+            //Si no, añadir la linea tal y como esta. Esto permite añadir
+            //HTML en el archivo fuente y este se  mostrara en la pagina.
+            if (in_array($line[0], $instructionSet)){
+                $html .= execute($line[0], substr(implode("", $line), 1)) . "<br>";
             } else {
-                echo "Great! Thanks for responding to our survey<br><br>";
-            }
-            echo "These are your details:<br><br>";
-
-            echo createTable($_SESSION);
-            if ($file == "challenge.php") {
-                $yearsLeft = 12 - (int) $_SESSION["yearAtSchool"];
-                $hoursWatchingTVPerYear = (int) $_SESSION["hoursWatchingTV"] * 365;
-                $hoursDoingHomeworkPerYear = (int) $_SESSION["hoursDoingHomework"] * 365;
-                $hoursUsingComputerPerYear = (int) $_SESSION["hoursUsingComputer"] * 365;
-
-                $percentageAwakeOnScreen = ((((int) $_SESSION["hoursWatchingTV"] + (int) $_SESSION["hoursUsingComputer"]) * 3600) * 100) / (strtotime($_SESSION["timeOfSleep"]) - strtotime($_SESSION["timeOfWakeUp"]));
-                
-                echo "Based on the information you entered, you will spend:<br><br>";
-                echo "<ul>";
-                echo "<li>" . $hoursWatchingTVPerYear . " hours watching TV or movies per year.</li><br><br>";
-                echo "<li>" . $hoursDoingHomeworkPerYear . " hours doing homework per year.</li><br><br>";
-                echo "<li>" . ($hoursWatchingTVPerYear + $hoursUsingComputerPerYear) . " hours in front of a TV or computer screen per year.</li><br><br>";
-                echo "<li>" . (((int) $_SESSION["timeSpentWithFamily"] + (int) $_SESSION["timeSpentWithFriends"]) * 365) . " hours with friends and family per year.</li><br><br>";
-                echo "<li>You have $yearsLeft years left at school, of which you'll spend:</li>";
-                echo "<li>" . ($hoursDoingHomeworkPerYear * $yearsLeft) . " hours doing homework until you finish school.</li><br><br>";
-                echo "<li>" . (($hoursWatchingTVPerYear + $hoursUsingComputerPerYear) * $yearsLeft) . " hours watching a screen until you finish school.</li><br><br>";
-                echo "<li>" . $percentageAwakeOnScreen . " percent of your awake time in front of a screen until you finish school.</li><br><br>";
-                echo "</ul>";
+                $html .= implode("", $line) . "<br>";
             };
-            //Creo que seria mas eficiente escribirlo directamente en HTML y crear otro script abajo.
-			echo "Do you want to add the student to the record?<br><br>";
-			echo "<form method='POST' action='$file'>";
-			    echo "<input type='submit' value='Return'></input>";
-			echo "</form>";
-			echo "<form method='POST'>";
-                echo "<input type='submit' name='insert' value='Add record'></input>";
-                echo "<br>";
-                echo "<input type='submit' name='insert' value='Show students'>";
-            //    echo "<input type='email' name='target'></input>";
-            //    echo "<input type='submit' name='insert' value='Send email'></input>";
-            echo "</form>";
-            
-        }
-        
-        //Si se ingresa a la pagina a traves del boton "Add record", añadir al estudiante a la base de datos.
-        //Si no, mostrar los datos ingresados.
-        
-        if (isset($_SESSION["insert"]) && $_SESSION["insert"] == "Add record") {
-            $database = fopen("students.txt", "a");
-            fwrite($database, date("d/m/Y+H:i:s") . "+1\r\n");
-			foreach ($_SESSION as $property => $value) {
-                if ($property == "insert" || $property == "target" || $property == "state") {continue;};
-                fwrite($database, "$property+$value\r\n");            
-		    };
-            fclose($database);
-            echo "Record successfully added to database!";
-            $_SESSION["insert"] = null;
-        } 
-        elseif (isset($_POST["insert"]) && $_POST["insert"] == "Show students") {
-            $database = fopen("students.txt", "r");
-            $data = array();
-            while (!feof($database)) {
-                $line = fgets($database);
-                $words = explode("+", $line);
-                if (isset($words[2])) {
-                    echo createTable($data);
-                }
-                if ($words[0] == "") {continue;};
-                $data[$words[0]] = $words[1];
-            };
-            echo createTable($data);
-            fclose($database);
-            echo '<form method="POST"><input type="submit" name="insert" value="Close"></form>';
-        }
-        //Necesita tener un servidor de email configurado.
-        /*elseif ($_SESSION["insert"] == "Send email") {
-            $message = createTable($_SESSION);
-            $header = "MIME-Version: 1.0\r\nContent-type: text/html;charset=UTF-8\r\n";
-            $header .= "From: test@ejemplo.com";
-            mail($_SESSION["target"], "Prototype Form", $message, $header);
-            echo "Email delivered.";
-        }*/
-        
-        else {
-            main($file);
         };
+    $html .= "</ul>";
+    $html .= "<input type='button' onclick='main.showSentForm();' value='Send form'>";
+    return $html;
+};
+
+//Usada por el parser para decidir que instruccion ejecutar.
+function execute($operator, $data) {
+    if ($operator == "+") {
+        return "<li>$data</li>";
+    };
+    if ($operator == "-") {
+        $pieces = explode("/", $data);
+        //El rtrim es necesario ya que el tipo siempre termina con algo de whitespace.
+        return "<input class='userData' type='" . rtrim($pieces[1]) . "' name='$pieces[0]'>";
+    };
+    if ($operator == "{") {
+        return "<h2>$data</h2>";
+    }
+};      
+
+//Muestra tablas creadas a partir de la database.
+function showFullData() {
+    $database = fopen("database.txt", "r");
+    $data = array();
+    $html = "";
+    while (!feof($database)) {
+        //Cada linea equivale a un par Propiedad-Valor.
+        $line = fgets($database);
+        //Las propiedades y los valores estan separados por el signo "+".
+        $words = explode("+", $line);
+        //Si hay 2 o mas "+" en la linea, crear una tabla con los datos presentes y reiniciar la data.
+        //Esto se usa para separar las tablas en fechas, ya que la fecha esta formateada:
+        //Ejemplo: (Fecha)+(Hora)+(Separador).
+        //
+        //El separador puede ser cualquier char, lo que importa es que este presente.
+        if (isset($words[2])) {
+            $html .= createTable($data);
+            $data = array();
         }
-        ?>
-        <style>body {text-align: center;} form {display: inline;}</style>
-    </body>
-</html>
+        if ($words[0] == "") {continue;};
+        if (!isset($words[1])) {continue;};
+        $data[$words[0]] = $words[1];
+    };
+    $html .= createTable($data);
+    fclose($database);
+    $html .= "<input type='button' onclick='main.showHeader();' value='Close'>";
+    //Permite devolvernos al estado de donde activamos showStudents.
+    return $html;
+};
+//Se muestra una vez que se hace submit en la forma principal
+function showSentForm($sentForm) {
+    $html = "Great! Thanks for filling the form<br><br>";
+    $html .= "These are your details:<br><br>";
+
+    $html .= createTable($sentForm);
+    $html .= "Do you want to add the data to the record?<br><br>";
+    $html .= "<input type='submit' onclick='main.showMainForm();' value='Return'></input>";
+    $html .= "<input type='submit' name='insert' value='Add record'></input>";
+    $html .= "<br>";
+    $html .= "<input type='submit' onclick='main.showFullData();' value='Show data'>";
+    return $html;
+};
+
+//Muestra un entry a la vez. Permite actualizarlos, eliminarlos y pasar entre ellos
+function viewData($data, $dataNum) {
+    $html = "";
+    if (!isset($data[$dataNum])) {
+        if (isset($data[$dataNum - 1])) {
+            $html = viewStudent($data, $dataNum -1);
+            return $html;
+        } else {
+            $html = "<input type='button' onclick='main.showMainForm();' value='Return'></input>";
+            return $html;
+        }
+    }
+    $html .= createTable($data[$dataNum]);
+    if ($dataNum != 1){
+        $html .= "<input type='button' onclick='main.data_num-- ;main.showIndividualData();' value='Anterior'></input>";
+    };
+    if ($dataNum != count($data)) {
+        $html .= "<input type='button' onclick='main.data_num++ ;main.showIndividualData();' value='Siguiente'></input>";
+    };
+    $html .= "<input type='button' onclick='main.showMainForm();' value='Return'></input>"; 
+    $html .= "<input type='button' name='insert' value='Update'></input>";
+    $html .= "<input type='button' name='insert' value='Delete student'></input>";
+    return $html;
+};    
+
+//Obtiene los datos desde el registro en la forma:
+//  $data[numeroData][propiedad] = valor
+//(Los datos son indexados desde 1, no desde 0)
+function getData($filename) {
+    $database = fopen($filename, "r");
+    $data = array();
+    $dataNum = 0;
+    while (!feof($database)) {
+        $line = fgets($database);
+        $words = explode("+", $line);
+        //Esto se ejecuta al principio tambien, lo que provoca que se indexe desde el 1.
+        if (isset($words[2])) {
+            $dataNum += 1;
+        };
+        if ($words[0] == "") {continue;};
+        if (!isset($words[1])) {continue;};
+        $data[$dataNum][$words[0]] = $words[1];
+    };
+    fclose($database);
+    return $data;
+};
+
+function main() {
+    $post = json_decode(file_get_contents("php://input"), true);
+
+    switch ($post["request"]) {
+        case "Main form":
+            echo showForm();
+            break;
+        case "Show full data":
+            echo showFullData();
+            break;
+        case "Show sent form":
+            echo showSentForm($post["data"]);
+            break;
+        case "Update database":
+            echo viewData(getData("database.txt"), $post["dataNum"]);
+            break;
+    };
+};
+
+main();
+?>
