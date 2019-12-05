@@ -87,7 +87,6 @@ function showFullData() {
     $html .= createTable($data);
     fclose($database);
     $html .= "<input type='button' onclick='main.showHeader();' value='Close'>";
-    //Permite devolvernos al estado de donde activamos showStudents.
     return $html;
 };
 //Se muestra una vez que se hace submit en la forma principal
@@ -97,10 +96,10 @@ function showSentForm($sentForm) {
 
     $html .= createTable($sentForm);
     $html .= "Do you want to add the data to the record?<br><br>";
-    $html .= "<input type='submit' onclick='main.showMainForm();' value='Return'></input>";
-    $html .= "<input type='submit' name='insert' value='Add record'></input>";
+    $html .= "<input type='button' onclick='main.showMainForm();' value='Return'></input>";
+    $html .= "<input type='button' onclick='main.addRecord();' value='Add record'></input>";
     $html .= "<br>";
-    $html .= "<input type='submit' onclick='main.showFullData();' value='Show data'>";
+    $html .= "<input type='button' onclick='main.showFullData();' value='Show data'>";
     return $html;
 };
 
@@ -109,7 +108,7 @@ function viewData($data, $dataNum) {
     $html = "";
     if (!isset($data[$dataNum])) {
         if (isset($data[$dataNum - 1])) {
-            $html = viewStudent($data, $dataNum -1);
+            $html = viewData($data, $dataNum -1);
             return $html;
         } else {
             $html = "<input type='button' onclick='main.showMainForm();' value='Return'></input>";
@@ -124,8 +123,8 @@ function viewData($data, $dataNum) {
         $html .= "<input type='button' onclick='main.data_num++ ;main.showIndividualData();' value='Siguiente'></input>";
     };
     $html .= "<input type='button' onclick='main.showMainForm();' value='Return'></input>"; 
-    $html .= "<input type='button' name='insert' value='Update'></input>";
-    $html .= "<input type='button' name='insert' value='Delete student'></input>";
+    $html .= "<input type='button' onclick='main.showUpdateForm();' value='Update'></input>";
+    $html .= "<input type='button' onclick='main.deleteRecord();' value='Delete record'></input>";
     return $html;
 };    
 
@@ -151,6 +150,96 @@ function getData($filename) {
     return $data;
 };
 
+//Crea una forma con los datos elegidos para proceder a modificarlos
+function updateData($data, $dataNum) {
+    $html = "";
+    $exclusive = false;
+    foreach ($data[$dataNum] as $property => $value) {
+        if (!$exclusive) {
+            $html .= "<li>$property</li>";
+            $html .= "<li>$value</li>";  
+            $exclusive = true;
+            continue;                  
+        };
+        $html .= "<ul>";
+        $html .= "<li>$property</li>";
+        $type = "text";
+        if (strpos($value, ":")) {
+            $type = "time";
+        } elseif (intval($value) !== 0) {
+            $type = "number";
+        };
+        $html .= "<input class='userData' type='$type' name='$property' value='" . rtrim($value) . "'></input>";
+        $html .= "</ul>";
+    };
+    $html .= "<input type='button' onclick='main.updateSingleRecord();' value='Add record'></input>";                    
+    $html .= "<input type='button' onclick='main.showIndividualData();' value='Return'></input>";
+    return $html;
+};
+
+//Registra los campos en el archivo con el formato:
+//         Dia/Mes/Año+Hora:Minutos:Segundos+1
+//                 Propiedad+Valor
+//                 Propiedad+Valor
+//                 Propiedad+Valor
+//                       ...
+//(El 1 puede ser intercambiado por cualquier cosa y funcionara igual)
+//(Cualquier cosa excepto un +)
+function addRecord($data) {
+    $database = fopen("database.txt", "a");
+    fwrite($database, date("d/m/Y+H:i:s") . "+1\r\n");
+    foreach ($data as $property => $value) {
+        fwrite($database, "$property+$value\r\n");            
+    };
+    fclose($database);
+    $html = "Record successfully added to database!";
+    $html .= "<input type='button' onclick='main.showMainForm();' value='Return'></input>";
+    return $html;
+};
+
+//Actua de manera similar a addRecord con dos diferencias:
+//1) Usa el modo "w", por lo que sobreescribe los contenidos del archivo.
+//2) No obtiene la data del array $_SESSION, la obtiene de un array $data que se le da como argumento.
+//Si quieres mantener los datos del archivo completo, pasa todo su contenido a un array, realiza los
+//cambios que requieras y pasa el array como el primer argumento.
+function updateRecord($data, $dataNum = null, $delete = false) {
+    $database = fopen("database.txt", "w");
+    foreach ($data as $record) {
+        $keys = array_keys($record);
+        $first = array_shift($keys);
+        $element = array_shift($record);
+        fwrite($database, "$first+$element+1\r\n");
+        foreach ($record as $property => $value) {
+            fwrite($database, "$property+$value\r\n");            
+        };
+    };
+    fclose($database);
+    if ($delete) {
+        return viewData(getData("database.txt"), $dataNum);
+    } else {
+        $html = "Record successfully updated to database!";
+        $html .= "<input type='button' onclick='main.showIndividualData();' value='Return'></input>";
+        return $html;
+    };
+};
+
+//Lee el archivo completo, borra el record y sobreescribe el archivo original.
+function deleteRecord($dataNum) {
+    $data = getData("database.txt");
+    array_splice($data, $dataNum - 1, 1);
+    return updateRecord($data, $dataNum, true);        
+};
+
+//Lee el archivo, modifica los datos de un record especifico y sobreescribe el archivo
+//con los datos cambiados.
+function updateSingleRecord($dataNum, $updateData) {
+    $data = getData("database.txt");
+    foreach ($updateData as $property => $value) {
+        $data[$dataNum][$property] = $value;
+    };
+    return updateRecord($data);
+};
+
 function main() {
     $post = json_decode(file_get_contents("php://input"), true);
 
@@ -164,8 +253,20 @@ function main() {
         case "Show sent form":
             echo showSentForm($post["data"]);
             break;
-        case "Update database":
+        case "View database":
             echo viewData(getData("database.txt"), $post["dataNum"]);
+            break;
+        case "View single record":
+            echo updateData(getData("database.txt"), $post["dataNum"]);
+            break;
+        case "Add record":
+            echo addRecord($post["data"]);
+            break;
+        case "Delete record":
+            echo deleteRecord($post["dataNum"]);
+            break;
+        case "Update single record":
+            echo updateSingleRecord($post["dataNum"], $post["data"]);
             break;
     };
 };

@@ -1,6 +1,29 @@
-1- Agregar los datos a un archivo de texto despues de visualizarlos en graph.php. {Listo}
+﻿1- Agregar los datos a un archivo de texto despues de visualizarlos en graph.php. {Listo}
 2- Dar la opcion de regresar al formulario con un boton. {Listo}
 3- Mostrar el archivo students en la pagina {Listo}
 4- Crear distintos bloques en el archivo students, cada uno identificado con fecha y hora del sistema (Append!) {Listo}
-5- Hacer el formulario tipo template. Las preguntas y opciones estan en un archivo de texto que es abierto y procesado en PHP. {Listo}
-6- Separar los datos del archivo student con algun caracter especial. {Listo}
+5- Hacer el formulario tipo template. Las preguntas y opciones estan en un archivo de texto que es abierto y procesado en PHP.{Listo}
+6- Separar los datos del archivo student con algun caracter especial. {Listo}�
+
+-Etapa 3: Actualizacion-
+7- Actualizar los datos en otra vista, con la forma de input.(No eliminar la vista actual) {Listo}
+8- Mostrar cada uno de los estudiantes, con detalle, en la otra vista. {Listo}
+9- Dar la opcion de siguiente y anterior en la pantalla del estudiante (Si se puede realizar esa accion, si no se puede hacer, no
+mostrar el boton) {Listo}
+10- Dar la opcion de eliminar al estudiante {Listo}
+11- Si se elimina al estudante, avanzar al siguiente (O retroceder si es el ultimo de la fila) {Listo}
+12- Si se elimina al unico estudiante que queda, mostrar la vista vacia. {Listo}
+
+-Etapa 4: AJAX-
+13- Crear un archivo PHP que procese los datos enviados mediante AJAX. {Listo}
+14- Renovar la pagina para que no haya necesidad de recargarla. {Listo}
+15- Cambiar todas las apariciones de los array $_SESSION y $_POST por requests en AJAX. {Listo}
+16- Usar una combinacion de JavaScript (Cliente) y PHP (Servidor) para realizar el proyecto. {Listo}
+
+
+Paginas:
+1- Forma principal
+2- Resultados
+3- Vista personalizada
+4- Forma personalizada
+5- Add record

@@ -9,6 +9,7 @@
         <p>How do you spend your day?</p>
         <br>
         <div id="header"></div>
+        <div id="main-form"></div>
         <div id="page"></div>
         </div>
 
@@ -17,19 +18,26 @@
 
         class Page {
 
-            //0 = Forma Principal
-            //1 = Al hacer submit a la forma principal
-            //2 = Vista individual
-            //3 = Forma de actualizacion
+            //0 = Forma Principal +
+            //1 = Al hacer submit a la forma principal +
+            //2 = Vista individual +
+            //3 = Forma de actualizacion +
             //4 = Pagina de record añadido
             current_page = 0;
+            //Adonde enviar los requests
             url = "results.php";
             page = document.getElementById("page");
             header = document.getElementById("header");
+            form = document.getElementById("main-form");
+            //Objeto con los datos enviados por el usuario.
             user_data = {};
             message = {};
             data_num = 1;
+            main_form_data = false;
+            first_call = true;
             
+            //Envia un request al url, usando message como el contenido
+            //Y llamando action con la respuesta.
             makeRequest(mode, action, message="") {
                 let request = new XMLHttpRequest();
                 request.onreadystatechange = function() {
@@ -41,7 +49,7 @@
                 request.send(message);
             };
 
-            showPage(html) {
+            showPage(html="") {
                 page.innerHTML = html;
             };
 
@@ -49,10 +57,20 @@
                 header.innerHTML = html;
             };
 
+            showForm(html="") {
+                main.form.innerHTML = html;
+            };
+
             showMainForm() {
-                this.showHeader();
-                this.message["request"] = "Main form";                
-                this.makeRequest("POST", this.showPage, JSON.stringify(this.message));
+                if (this.first_call) {
+                    this.showHeader();
+                    this.message["request"] = "Main form";                
+                    this.makeRequest("POST", this.showForm, JSON.stringify(this.message));
+                    this.first_call = false;
+                } else {
+                    this.showPage();
+                    this.form.hidden = false;
+                };
             };
 
             showFullData() {
@@ -62,17 +80,52 @@
 
             showSentForm() {
                 this.showHeader();
-                this.setUserData();
+                this.setUserData(this.form);
                 this.message["request"] = "Show sent form"; 
                 this.message["data"] = this.user_data;
                 this.makeRequest("POST", this.showPage, JSON.stringify(this.message));
+                this.main_form_data = true;
+                this.form.hidden = true;
             };
 
             showIndividualData() {
                 this.showHeader();
-                this.message["request"] = "Update database";
+                this.message["request"] = "View database";
                 this.message["dataNum"] = this.data_num;
                 this.makeRequest("POST", this.showPage, JSON.stringify(this.message));
+                this.form.hidden = true;
+            };
+
+            showUpdateForm() {
+                this.showHeader();
+                this.message["request"] = "View single record";
+                this.message["dataNum"] = this.data_num;
+                this.makeRequest("POST", this.showPage, JSON.stringify(this.message));
+            };
+
+            addRecord() {
+                this.showHeader();
+                this.message["request"] = "Add record";
+                this.message["data"] = this.user_data;
+                this.makeRequest("POST", this.showPage, JSON.stringify(this.message));
+                this.main_form_data = false;
+            };
+
+            deleteRecord() {
+                this.showHeader();
+                this.message["request"] = "Delete record";
+                this.message["dataNum"] = this.data_num;
+                this.makeRequest("POST", this.showPage, JSON.stringify(this.message));
+            };
+
+            updateSingleRecord() {
+                this.showHeader();
+                this.setUserData(page);
+                this.message["request"] = "Update single record";
+                this.message["dataNum"] = this.data_num;
+                this.message["data"] = this.user_data;
+                this.makeRequest("POST", this.showPage, JSON.stringify(this.message));
+                this.main_form_data = false;
             };
 
             static arraysToObject(keys, values) {
@@ -83,8 +136,8 @@
                 return newObject;
             };
 
-            setUserData() {
-                let elements =  document.getElementsByClassName("userData");
+            setUserData(source) {
+                let elements =  source.getElementsByClassName("userData");
                 let keys = [];
                 let values = [];
                 for (let i = 0; i < elements.length; i++) {
