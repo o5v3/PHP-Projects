@@ -38,17 +38,36 @@
             
             //Envia un request al url, usando message como el contenido
             //Y llamando action con la respuesta.
-            makeRequest(mode, action, message="") {
+            makeRequest(mode, action, message="", opt_actions=[]) {
                 let request = new XMLHttpRequest();
                 request.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {
                         action(this.responseText);
+                        if (opt_actions.length > 0) {
+                            for (let i = 0; i < opt_actions.length; i++) {
+                                opt_actions[i](this.responseText);
+                            };
+                        };
                     };
                 };
                 request.open(mode, this.url, true);
                 request.send(message);
             };
 
+            makeInteractiveTables(opt_argument="") {
+                let tables = document.getElementsByTagName("table");
+
+                for (let i = 0; i < tables.length; i++) {
+                    tables[i].addEventListener("click", function(element) {
+                        let buttons = document.getElementsByClassName("table-button");
+                        let newButtons = [];
+                        for (let i = 0; i < buttons.length; i++) {
+                            newButtons[i] = buttons[i].cloneNode(true);
+                            element.target.insertAdjacentElement("afterend", newButtons[i]);
+                        };
+                    });
+                };
+            };
             showPage(html="") {
                 page.innerHTML = html;
             };
@@ -75,7 +94,7 @@
 
             showFullData() {
                 this.message["request"] = "Show full data";
-                this.makeRequest("POST", this.showHeader, JSON.stringify(this.message));
+                this.makeRequest("POST", this.showHeader, JSON.stringify(this.message), [this.makeInteractiveTables]);
             };
 
             showSentForm() {
