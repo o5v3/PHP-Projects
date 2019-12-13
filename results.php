@@ -3,7 +3,10 @@
 function showForm() {
     $html = "<input type='button' onclick='main.showFullData();' value='Show data'>";
     $html .= "<input type='button' onclick='main.showIndividualData();' value='Update data'>";
-    $html .= "</form>";
+    $html .= "<input class='official-button' style='display: none;' type='button' onclick='main.data_num = this.number; main.deleteRecord();' value='Delete record'></input>";
+    $html .= "<input class='official-button' style='display: none;' type='button' onclick='main.data_num = this.number; main.showUpdateForm();' value='Update'></input>";
+    $html .= "<input class='official-button' style='display: none;' type='button' onclick='main.data_num = this.number; main.showIndividualData();' value='Show record'></input>";
+
     //Si quieres cambiar el archivo del codigo fuente, cambia el nombre aqui.
     $source = fopen("file.txt", "r");
     $html .= parser($source);

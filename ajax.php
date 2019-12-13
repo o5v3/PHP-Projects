@@ -58,12 +58,45 @@
                 let tables = document.getElementsByTagName("table");
 
                 for (let i = 0; i < tables.length; i++) {
+                    tables[i].number = i;
                     tables[i].addEventListener("click", function(element) {
-                        let buttons = document.getElementsByClassName("table-button");
+
+                        let target = element.target.offsetParent;
+    
+                        if (target.localName == "body") {
+                            return;
+                        };
+
+                        let buttons = [...document.querySelectorAll(".table-button")];
+                        let official_buttons = [...document.querySelectorAll(".official-button")];
+
+                        if (buttons.length == 0) {
+                            for (let i = 0; i < official_buttons.length; i++) {
+                                buttons[i] = official_buttons[i].cloneNode(true);
+                                buttons[i].className = "table-button";
+                                buttons[i].style.display = "";
+                            };
+                        };
+
+                        if (buttons.length > official_buttons.length) {
+                            let otherButtons = buttons.splice(2);
+                            for (let j = 0; j < otherButtons.length; j++) {
+                                otherButtons[j].remove();
+                            };
+                        };
+
                         let newButtons = [];
+
                         for (let i = 0; i < buttons.length; i++) {
                             newButtons[i] = buttons[i].cloneNode(true);
-                            element.target.insertAdjacentElement("afterend", newButtons[i]);
+                            buttons[i].remove();
+                        };
+
+                        newButtons.reverse();
+                        
+                        for (let i = 0; i < newButtons.length; i++) {
+                            newButtons[i].number = target.number;
+                            target.insertAdjacentElement("afterend", newButtons[i]);
                         };
                     });
                 };
@@ -119,7 +152,9 @@
                 this.showHeader();
                 this.message["request"] = "View single record";
                 this.message["dataNum"] = this.data_num;
+                console.log(this.data_num);
                 this.makeRequest("POST", this.showPage, JSON.stringify(this.message));
+                this.form.hidden = true;
             };
 
             addRecord() {
@@ -135,6 +170,7 @@
                 this.message["request"] = "Delete record";
                 this.message["dataNum"] = this.data_num;
                 this.makeRequest("POST", this.showPage, JSON.stringify(this.message));
+                this.form.hidden = true;
             };
 
             updateSingleRecord() {
